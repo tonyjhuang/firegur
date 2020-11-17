@@ -58,4 +58,3 @@ document.addEventListener('DOMContentLoaded', function () {
         loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
     }
 });
-
