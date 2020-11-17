@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "firebase": "^8.0.2",
+    "firebaseui": "^4.7.1",
     "jquery": "^3.5.1"
   },
   "devDependencies": {
