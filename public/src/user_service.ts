@@ -30,7 +30,7 @@ export class UserService {
      * Checks if the user exists in Firestore.
      */ 
     isUserRegistered(id: string) : boolean {
-        const firestore = firebase.firestore();
+        const firestore = firebaseApp.firestore();
         var docRef = firestore.collection('users').doc(id);
         docRef.get().then(function(doc) {
             if(doc.exists) {
@@ -49,13 +49,16 @@ export class UserService {
         // Add groupIds to user's array
     }
 
+    getCurrentUser(callback: (user: (firebase.User | null)) => any) {
+        firebaseApp.auth().onAuthStateChanged(callback);
+    }
 }
 
 /**
  * Creates a new User document in Firestore.
  */
 function createUser(userId: string, options: CreateUserOptions) {
-    const firestore = firebase.firestore();
+    const firestore = firebaseApp.firestore();
     const data: any = {
         username: options.username,
     };
