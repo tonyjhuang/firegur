@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import '@firebase/analytics'
 import '@firebase/auth'
 import firebase from 'firebase'

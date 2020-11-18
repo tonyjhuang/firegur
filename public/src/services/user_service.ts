@@ -1,6 +1,7 @@
 import { firebaseApp } from '../firebase_config'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/firestore'
 
 export interface CreateUserOptions {
     username: string,
@@ -32,8 +33,8 @@ export class UserService {
 
     /**
      * Checks if the user exists in Firestore.
-     */ 
-    async isUserRegistered(id: string) : Promise<boolean> {
+     */
+    async isUserRegistered(id: string): Promise<boolean> {
         const firestore = firebaseApp.firestore();
         var docRef = firestore.collection('users').doc(id);
         docRef.get().then(function (doc) {
