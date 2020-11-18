@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { firebaseApp } from './firebase_config'
 import firebase from 'firebase'
-import {UserService} from './user_service'
+import { UserService } from './user_service'
 
 
 export enum PostPrivacy {
@@ -18,75 +18,56 @@ export interface CreatePostOptions {
     groupId?: string
 }
 
-/**
- * Callback handler for create a new post.
- */
-export interface NewPostCallback {
-    // progress = [0, 1]
-    onImageUploadProgress(progress: number): void
-    onComplete(): void
-    onError(e: Error): void
-}
-
 export class PostService {
     /**
      * Uploads an image and creates a new Post for it.
      */
-    newPost(options: CreatePostOptions, callback: NewPostCallback) {
-        new UserService().getCurrentUser(function (currentUser) {
-            if (!currentUser) {
-                callback.onError(new Error('Please login first.'))
-                return;
-            }    
-            createPost(currentUser, options, callback);
-        });
+    async newPost(
+        options: CreatePostOptions,
+        imageUploadProgressCallback: (progress: number) => any): Promise<void> {
+        const id = uuidv4();
+        const path = `posts/${id}`;
+        const currentUser = await new UserService().getCurrentUser();
+        await validateCreatePostOptions(options);
+        await uploadImage(path, options.image, imageUploadProgressCallback);
+        await savePost(currentUser, path, options);
     }
-}
-
-function createPost(user: firebase.User, options: CreatePostOptions, callback: NewPostCallback) {
-    const id = uuidv4();
-    const path = `posts/${id}`;
-
-    const validateErrorMsg = validateCreatePostOptions(options);
-    if (validateErrorMsg) {
-        callback.onError(new Error(validateErrorMsg));
-        return;
-    }
-
-    uploadImage(path, options.image).on(
-        firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
-            callback.onImageUploadProgress(snapshot.bytesTransferred / snapshot.totalBytes)
-        }, function (error) {
-            callback.onError(new Error(error.code));
-        }, function () {
-            // Upload completed successfully.
-            savePost(user, path, options)
-                .then(callback.onComplete)
-                .catch(callback.onError);
-        });
 
 }
 
 /**
  * Validates options and returns undefined or an error string.
  */
-function validateCreatePostOptions(options: CreatePostOptions): string | void {
+function validateCreatePostOptions(options: CreatePostOptions): Promise<void> {
     if (options.privacy === PostPrivacy.Group) {
         const groupId = options.groupId;
         if (!groupId) {
-            return 'Missing group name.';
+            return Promise.reject(new Error('Missing group name.'));
         } else if (/\s/g.test(groupId)) {
-            return 'Invalid group name.';
+            return Promise.reject(new Error('Invalid group name.'));
         }
     }
+    return Promise.resolve();
 }
 
 /**
  * Uploads an image to Firebase Storage.
  */
-function uploadImage(path: string, image: File): firebase.storage.UploadTask {
+function uploadImage(
+    path: string, 
+    image: File, 
+    imageUploadProgressCallback: (progress: number) => any): Promise<void> {
     const storage = firebaseApp.storage();
-    return storage.ref(path).put(image);
+    const imageUploadTask = storage.ref(path).put(image);
+    // Wrap image upload in promise.
+    return new Promise((resolve, reject) => {
+        imageUploadTask.on(
+            firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
+                imageUploadProgressCallback(snapshot.bytesTransferred / snapshot.totalBytes);
+            }, function (error) {
+                return reject(new Error(error.code));
+            }, resolve);
+    });
 }
 
 /**
