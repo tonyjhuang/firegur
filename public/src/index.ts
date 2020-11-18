@@ -1,13 +1,8 @@
-export {};
+export { };
 
-import firebase from '@firebase/app'
 import '@firebase/analytics'
 import '@firebase/auth'
-import {firebaseConfig} from './firebase_config'
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+import { firebaseApp } from './firebase_config'
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -29,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
     try {
-        let app = firebase.app();
+        let app = firebaseApp;;
         let features = [
             'auth',
             'database',

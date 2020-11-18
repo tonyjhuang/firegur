@@ -1,10 +1,18 @@
 export { };
 
 import $ from 'jquery';
+import { PostService } from './post_service'
 
-var formState = {
-    title: false,
-    image: false
+interface FormState {
+    title: string,
+    caption: string,
+    image?: File
+}
+
+var formState: FormState = {
+    title: '',
+    caption: '',
+    image: undefined
 };
 
 $('#upload').on('change', function (e) {
@@ -21,20 +29,19 @@ function setImagePreview(preview: HTMLImageElement, file: File) {
     var reader = new FileReader();
 
     reader.onload = function (e) {
-        const target =  e.target;
+        const target = e.target;
         if (!target) return;
         const result = target.result;
         if (!result) return;
         preview.src = result as string
-        formState.image = true
+        formState.image = file
         updateViewState();
     };
     reader.readAsDataURL(file);
 }
 $('#title').on('input', function (e) {
     const input = e.currentTarget as HTMLInputElement;
-    console.log(input.value);
-    formState.title = !!input.value;
+    formState.title = input.value;
     updateViewState();
 });
 
@@ -48,6 +55,29 @@ function updateViewState() {
     }
 }
 
-$('#submit').on('click', function(e) {
-    console.log('hello!');
+$('#submit').on('click', function (e) {
+    if (!formState.title && !formState.image) return;
+    new PostService().newPost({
+        title: formState.title,
+        caption: formState.caption,
+        image: formState.image!
+    }, {
+        onImageUploadProgress(progress: number) {
+            // TODO: show progress in UI
+            console.log(`Progress: ${progress}`);
+        },
+        onComplete() {
+            // TODO: navigate to index.
+            console.log('done!')
+            goToIndex();
+        },
+        onError(e: Error) {
+            // TODO: show error in UI
+            console.warn(e);
+        }
+    })
 });
+
+function goToIndex() {
+    window.location.href = './index.html';
+}
