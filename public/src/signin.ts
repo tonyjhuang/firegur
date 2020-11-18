@@ -3,6 +3,7 @@ export {};
 import firebase from "firebase/app";
 import "firebase/auth"
 import * as firebaseui from "firebaseui";
+import $ from 'jquery';
 
 var firebaseConfig = {
     apiKey: "AIzaSyADkx0R20kiGU7upgsdFGn1PORCYs_Sps8",
@@ -40,6 +41,7 @@ var uiConfig = {
     signInOptions: [
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
     ]
 };
 
