@@ -1,19 +1,34 @@
 export { };
 
 import $ from 'jquery';
-import { PostService } from './post_service'
+import { PostService, PostPrivacy } from './post_service'
 
 interface FormState {
     title: string,
     caption: string,
     image?: File
+    privacy: PostPrivacy,
+    groupId?: string
 }
 
 var formState: FormState = {
     title: '',
     caption: '',
-    image: undefined
+    image: undefined,
+    privacy: PostPrivacy.Public,
+    groupId: ''
 };
+
+const BUTTON_ID_TO_PRIVACY: Record<string, PostPrivacy> = {
+    'privacy-private': PostPrivacy.Private,
+    'privacy-public': PostPrivacy.Public,
+    'privacy-group': PostPrivacy.Group
+}
+
+/** On DOM ready. */
+$(function () {
+    updateViewState();
+});
 
 /**
  * Set image preview when the user selects an image using the picker.
@@ -49,6 +64,7 @@ function setImagePreview(preview: HTMLImageElement, file: File) {
 $('#title').on('input', function (e) {
     const input = e.currentTarget as HTMLInputElement;
     formState.title = input.value;
+    formState['title'] = input.value;
     updateViewState();
 });
 
@@ -62,15 +78,43 @@ $('#caption').on('input', function (e) {
 });
 
 /**
- * Enable/disable submit button.
+ * Update form state with a new groupId.
+ */
+$('#groupId').on('input', function (e) {
+    const input = e.currentTarget as HTMLInputElement;
+    formState.groupId = input.value;
+    updateViewState();
+});
+
+/**
+ * React to changes in form data.
  */
 function updateViewState() {
     console.log(JSON.stringify(formState));
     const submit = $('#submit')[0] as HTMLButtonElement;
+    // Enable/disable submit button
     if (formState.title && formState.image) {
         submit.disabled = false;
     } else {
         submit.disabled = true;
+    }
+    // Set privacy butotn state
+    for (const [buttonId, privacy] of Object.entries(BUTTON_ID_TO_PRIVACY)) {
+        const button = $(`#${buttonId}`)[0];
+        if (formState.privacy === privacy) {
+            button.classList.remove('btn-secondary');
+            button.classList.add('btn-primary');
+        } else {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-secondary');
+        }
+    }
+    // Show/hide group id input
+    const groupIdInput = $('#groupId')[0];
+    if (formState.privacy === PostPrivacy.Group) {
+        groupIdInput.style.visibility = 'visible';
+    } else {
+        groupIdInput.style.visibility = 'hidden';
     }
 }
 
@@ -82,7 +126,9 @@ $('#submit').on('click', function (e) {
     new PostService().newPost({
         title: formState.title,
         caption: formState.caption,
-        image: formState.image!
+        image: formState.image!,
+        privacy: formState.privacy,
+        groupId: formState.groupId
     }, {
         onImageUploadProgress(progress: number) {
             setProgressBarPercentage(progress);
@@ -94,6 +140,7 @@ $('#submit').on('click', function (e) {
         },
         onError(e: Error) {
             // TODO: show error in UI
+            alert(e.message);
             console.warn(e);
         }
     })
@@ -117,3 +164,9 @@ function setProgressBarPercentage(progress: number) {
 function goToIndex() {
     window.location.href = './index.html';
 }
+
+$('.privacy-button').on('click', function (e) {
+    const buttonId: string = e.currentTarget.id;
+    formState.privacy = BUTTON_ID_TO_PRIVACY[buttonId];
+    updateViewState();
+})

@@ -77,7 +77,18 @@
                     </div>
 
                     <!-- Uploaded image area-->
-                    <div class="image-area mt-4 mb-3"><img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block"></div>
+                    <div class="image-area mt-4 mb-5"><img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block"></div>
+
+                    <!-- Privacy selector -->
+                    <div class="input-group btn-group px-5 mb-3" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-secondary privacy-button" id="privacy-private">Private</button>
+                        <button type="button" class="btn btn-secondary privacy-button" id="privacy-public">Public</button>
+                        <button type="button" class="btn btn-secondary privacy-button" id="privacy-group">Group</button>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="groupId" placeholder="Group ID" style="visibility: hidden">
+                    </div>
                 </div>
             </div>
         </div>
