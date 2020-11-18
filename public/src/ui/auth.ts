@@ -5,7 +5,9 @@ import { firebaseApp } from '../firebase_config'
 import { User, UserService } from '../services/user_service'
 
 
-
+/**
+ * Initializes the state of the signin toolbar using the current user auth state. 
+ */
 export function initToolbar(signinElement: HTMLElement, signoutElement: HTMLElement) {
     $(signoutElement).on('click', function (e) {
         firebaseApp.auth().signOut();
