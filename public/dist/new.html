@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.1.1">
-    <title>Firegur 🔥</title>
+    <title> New Post - Firegur 🔥 </title>
 
     <!-- bootstrap -->
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/blog/">
@@ -46,20 +46,22 @@
                     <a class="blog-header-logo text-dark" href="./index.html">Firegur 🔥</a>
                 </div>
                 <div class="col-4 d-flex justify-content-end align-items-center">
-                    <a class="btn btn-sm btn-success" href="#">Submit</a>
+                    <button class="btn btn-sm btn-success" id="submit" href="#" disabled>Submit</button>
                 </div>
             </div>
         </header>
         <div class="upload-container py-5">
-
-            <header class="text-white text-center">
-                <img src="https://res.cloudinary.com/mhmd/image/upload/v1564991372/image_pxlho1.svg" alt="" width="150" class="mb-4">
-            </header>
-
-
             <div class="row py-4">
                 <div class="col-lg-6 mx-auto">
 
+                    <!-- Post data-->
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control display-4 small" id="title" placeholder="Set a title">
+                    </div>
+
+                    <div class="input-group mb-3 ">
+                        <textarea class="form-control" id="caption" placeholder="(Optional) Add a caption"></textarea>
+                    </div>
                     <!-- Upload image input-->
                     <div class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm">
                         <input id="upload" type="file" class="form-control border-0">
@@ -72,10 +74,7 @@
                     </div>
 
                     <!-- Uploaded image area-->
-                    <p class="font-italic text-white text-center">The image uploaded will be rendered inside the box below.
-                    </p>
-                    <div class="image-area mt-4"><img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block"></div>
-
+                    <div class="image-area mt-4 mb-3"><img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block"></div>
                 </div>
             </div>
         </div>
