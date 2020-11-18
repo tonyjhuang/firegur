@@ -85,8 +85,7 @@ $('#submit').on('click', function (e) {
         image: formState.image!
     }, {
         onImageUploadProgress(progress: number) {
-            // TODO: show progress in UI
-            console.log(`Progress: ${progress}`);
+            setProgressBarPercentage(progress);
         },
         onComplete() {
             // TODO: navigate to index.
@@ -99,6 +98,18 @@ $('#submit').on('click', function (e) {
         }
     })
 });
+
+/**
+ * Styles the progress bar, takes a value within [0, 1]
+ */
+function setProgressBarPercentage(progress: number) {
+    if (progress < 0 || progress > 1) {
+        console.warn('unexpected progress value: ' + progress);
+        return;
+    }
+    const progressBar = $('#post-progress')[0] as HTMLDivElement;
+    progressBar.style.width = `${progress * 100}%`;
+}
 
 /**
  * Return to index.
