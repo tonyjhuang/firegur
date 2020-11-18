@@ -128,9 +128,9 @@ $('#submit').on('click', async function (e) {
         privacy: formState.privacy,
         groupId: formState.groupId
     }, setProgressBarPercentage)
-        .then(() => {
+        .then((postId) => {
             console.log('done!')
-            goToIndex();
+            goToPost(postId);
         }).catch((e: Error) => {
             alert(e.message);
             console.warn(e);
@@ -152,8 +152,8 @@ function setProgressBarPercentage(progress: number) {
 /**
  * Return to index.
  */
-function goToIndex() {
-    window.location.href = './index.html';
+function goToPost(postId: string) {
+    window.location.href = `./post.html?pid=${postId}`;
 }
 
 $('.privacy-button').on('click', function (e) {

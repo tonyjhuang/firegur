@@ -42,17 +42,18 @@ export class PostService {
     }
 
     /**
-     * Uploads an image and creates a new Post for it.
+     * Uploads an image and creates a new Post for it. Returns the new post's id.
      */
     async create(
         options: CreatePostOptions,
-        imageUploadProgressCallback: (progress: number) => any): Promise<void> {
+        imageUploadProgressCallback: (progress: number) => any): Promise<string> {
         const id = uuidv4();
         const path = `posts/${id}`;
         const currentUser = await this.userService.getCurrentUser();
         await validateCreatePostOptions(options);
         await uploadImage(path, options.image, imageUploadProgressCallback);
-        await savePost(currentUser, path, options);
+        const newPost = await savePost(currentUser, path, options);
+        return newPost.id;
     }
 
     async get(postId: string): Promise<Post> {

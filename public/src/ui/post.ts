@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import postTemplateString from './templates/post.html'
-import { PostService } from '../services/post_service'
+import { Post, PostService } from '../services/post_service'
 
 
 /** On DOM ready. */
@@ -26,11 +26,20 @@ async function loadPost(postId: string) {
     const post = await new PostService().get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(renderPost());
+    $('#post-container').append(renderPost(post));
 }
 
-function renderPost(): string {
-    return postTemplateString;
+function renderPost(post: Post): string {
+    // Deep copy string.
+    console.log(postTemplateString);
+    let tmpl = postTemplateString.slice();
+    console.log(tmpl)
+    tmpl = tmpl.replace('${title}', post.title);
+    if (post.caption) tmpl = tmpl.replace('${caption}', post.caption);
+    tmpl = tmpl.replace('${username}', post.author.username);
+    tmpl = tmpl.replace('${timestamp}', post.timestamp.toDateString());
+    console.log(tmpl);
+    return tmpl;
 }
 
 function hideSpinner() {
