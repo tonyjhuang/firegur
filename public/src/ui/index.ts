@@ -2,8 +2,8 @@ export { };
 
 import '@firebase/analytics'
 import '@firebase/auth'
-import { firebaseApp } from './firebase_config'
-import { UserService } from './user_service'
+import { firebaseApp } from '../firebase_config'
+import { UserService } from '../services/user_service'
 
 
 document.addEventListener('DOMContentLoaded', function () {

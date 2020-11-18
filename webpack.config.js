@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        index: './public/src/index.ts',
-        new: '/public/src/new.ts',
-        signin: '/public/src/signin.ts'
+        index: './public/src/ui/index.ts',
+        new: '/public/src/ui/new.ts',
+        signin: '/public/src/ui/signin.ts'
     },
     devtool: 'inline-source-map',
     module: {
