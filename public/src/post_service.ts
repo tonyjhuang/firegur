@@ -2,10 +2,19 @@ import { v4 as uuidv4 } from 'uuid'
 import { firebaseApp } from './firebase_config'
 import firebase from 'firebase'
 
+
+export enum PostPrivacy {
+    Private = 1,
+    Public,
+    Group
+}
+
 export interface CreatePostOptions {
     title: string,
     caption?: string,
-    image: File
+    image: File,
+    privacy: PostPrivacy,
+    groupId?: string
 }
 
 /**
@@ -25,6 +34,13 @@ export class PostService {
     newPost(options: CreatePostOptions, callback: NewPostCallback) {
         const id = uuidv4();
         const path = `posts/${id}`;
+
+        const validateErrorMsg = validateCreatePostOptions(options);
+        if (validateErrorMsg) {
+            callback.onError(new Error(validateErrorMsg));
+            return;
+        }
+
         uploadImage(path, options.image).on(
             firebase.storage.TaskEvent.STATE_CHANGED, function (snapshot) {
                 callback.onImageUploadProgress(snapshot.bytesTransferred / snapshot.totalBytes)
@@ -34,9 +50,25 @@ export class PostService {
                 // Upload completed successfully.
                 createPost(path, options)
                     .then(callback.onComplete)
-                    .catch(callback.onError)
+                    .catch(callback.onError);
             });
 
+    }
+}
+
+/**
+ * Validates options and returns undefined or an error string.
+ */
+function validateCreatePostOptions(options: CreatePostOptions): string | undefined {
+    if (options.privacy === PostPrivacy.Group) {
+        const groupId = options.groupId;
+        if (!groupId) {
+            return 'Missing group name.';
+        } else if (/\s/g.test(groupId)) {
+            return 'Invalid group name.';
+        }
+    } else if (options.privacy === PostPrivacy.Private) {
+        return 'Unsupported.';
     }
 }
 
@@ -60,5 +92,18 @@ function createPost(path: string, options: CreatePostOptions): Promise<firebase.
     };
     if (options.caption) data.caption = options.caption;
 
-    return firestore.collection('posts/public/posts').add(data);
+    const collectionPath = getCollectionPath(options);
+    return firestore.collection(collectionPath).add(data);
+}
+
+function getCollectionPath(options: CreatePostOptions): string {
+    switch (options.privacy) {
+        case PostPrivacy.Public:
+            return 'posts/public/posts';
+        case PostPrivacy.Private:
+            // TODO get userid from auth
+            return '';
+        case PostPrivacy.Group:
+            return `posts/${options.groupId!}/posts`;
+    }
 }
