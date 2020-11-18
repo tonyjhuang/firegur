@@ -22,18 +22,18 @@ export interface User {
 
 export class UserService {
     /**
-     * Uploads an image and creates a new Post for it.
+     * Creates and stores a new user.
      */
-    newUser(userId: string, options: CreateUserOptions, callback: NewUserCallback) {
-        createUser(userId, options)
+    async newUser(userId: string, options: CreateUserOptions, callback: NewUserCallback) {
+        await createUser(userId, options)
             .then(callback.onComplete)
             .catch(callback.onError);
     }
 
     /**
      * Checks if the user exists in Firestore.
-     */
-    isUserRegistered(id: string): boolean {
+     */ 
+    async isUserRegistered(id: string) : Promise<boolean> {
         const firestore = firebaseApp.firestore();
         var docRef = firestore.collection('users').doc(id);
         docRef.get().then(function (doc) {
@@ -49,7 +49,7 @@ export class UserService {
 
     // TODO: Implement adding group to user.
     addGroupToUser(userId: string, groupIds: String[]) {
-        // Check for user
+        // Get user's reference in Firestore
         // Add groupIds to user's array
     }
 
@@ -85,7 +85,7 @@ function fetchCurrentUser(): Promise<firebase.User> {
 /**
  * Creates a new User document in Firestore.
  */
-function createUser(userId: string, options: CreateUserOptions) {
+function createUser(userId: string, options: CreateUserOptions): Promise<void> {
     const firestore = firebaseApp.firestore();
     const data: any = {
         username: options.username,
