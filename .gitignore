@@ -64,3 +64,7 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# Webpack output.
+*.bundle.js
+*.bundle.js.LICENSE.txt
