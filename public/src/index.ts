@@ -2,53 +2,22 @@ export { };
 
 import '@firebase/analytics'
 import '@firebase/auth'
+import $ from 'jquery';
 import { firebaseApp } from './firebase_config'
 import { UserService } from './user_service'
 
+const signinElement = $('#signin')[0] as HTMLLinkElement
+const signoutElement = $('#signout')[0] as HTMLLinkElement
 
-document.addEventListener('DOMContentLoaded', function () {
-    const loadEl = document.querySelector('#load');
-    if (!loadEl) return;
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-    // // The Firebase SDK is initialized and available here!
-    //
-    // firebase.auth().onAuthStateChanged(user => { });
-    // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-    // firebase.firestore().doc('/foo/bar').get().then(() => { });
-    // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-    // firebase.messaging().requestPermission().then(() => { });
-    // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-    // firebase.analytics(); // call to activate
-    // firebase.analytics().logEvent('tutorial_completed');
-    // firebase.performance(); // call to activate
-    //
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-    try {
-        let app = firebaseApp;;
-        let features = [
-            'auth',
-            'database',
-            'firestore',
-            'functions',
-            'messaging',
-            'storage',
-            'analytics',
-            'remoteConfig',
-            'performance',
-        ].filter(feature => app.hasOwnProperty(feature))
-        loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-    } catch (e) {
-        console.error(e);
-        loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-    }
+$("#signout").on('click', function(e) {
+    firebaseApp.auth().signOut();
+    updateLoginState(false, signinElement, signoutElement);
 });
 
-var currentUid: string | null = null;
-firebaseApp.auth().onAuthStateChanged(function(user) {
+firebaseApp.auth().onAuthStateChanged(user => {
     var userService = new UserService();
-    if (user && user.uid != currentUid) {
-        // TODO: Hide sign-in button and show sign-out button
+    if (user) {
+        updateLoginState(true, signinElement, signoutElement);
         // if user id not in database, create user
         if (!userService.isUserRegistered(user.uid)) {
             var username = "";
@@ -71,9 +40,19 @@ firebaseApp.auth().onAuthStateChanged(function(user) {
                 });
         }
     } else { 
-        // TODO: Sign out operation. Reset current user UID.
-        currentUid = null;
-        // TODO: Hide sign-out button and show sign-in button in index.html
+        updateLoginState(false, signinElement, signoutElement);
     }
-
 });
+
+/**
+ * Update log in state.
+ */
+function updateLoginState(bool: boolean, signinElement: HTMLLinkElement, signoutElement: HTMLLinkElement) {
+    if (bool) {
+        signinElement.style.visibility = 'hidden';
+        signoutElement.style.visibility = 'visible';
+    } else {
+        signinElement.style.visibility = 'visible';
+        signoutElement.style.visibility = 'hidden';
+    }
+}
