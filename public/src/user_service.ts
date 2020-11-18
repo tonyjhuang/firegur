@@ -49,8 +49,16 @@ export class UserService {
         // Add groupIds to user's array
     }
 
-    getCurrentUser(callback: (user: (firebase.User | null)) => any) {
-        firebaseApp.auth().onAuthStateChanged(callback);
+    getCurrentUser(): Promise<firebase.User> {
+        return new Promise((resolve, reject) => {
+            firebaseApp.auth().onAuthStateChanged((currentUser) => {
+                if (!currentUser) {
+                    return reject(new Error('Please login first.'));
+                }
+                resolve(currentUser);
+            });
+        })
+        
     }
 }
 

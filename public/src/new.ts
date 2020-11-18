@@ -121,29 +121,22 @@ function updateViewState() {
 /**
  * Handle post submit
  */
-$('#submit').on('click', function (e) {
+$('#submit').on('click', async function (e) {
     if (!formState.title && !formState.image) return;
-    new PostService().newPost({
+    await new PostService().newPost({
         title: formState.title,
         caption: formState.caption,
         image: formState.image!,
         privacy: formState.privacy,
         groupId: formState.groupId
-    }, {
-        onImageUploadProgress(progress: number) {
-            setProgressBarPercentage(progress);
-        },
-        onComplete() {
-            // TODO: navigate to index.
+    }, setProgressBarPercentage)
+        .then(() => {
             console.log('done!')
             goToIndex();
-        },
-        onError(e: Error) {
-            // TODO: show error in UI
+        }).catch((e: Error) => {
             alert(e.message);
             console.warn(e);
-        }
-    })
+        });
 });
 
 /**
