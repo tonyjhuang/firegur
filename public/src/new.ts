@@ -15,14 +15,17 @@ var formState: FormState = {
     image: undefined
 };
 
+/**
+ * Set image preview when the user selects an image using the picker.
+ */
 $('#upload').on('change', function (e) {
     const input = e.currentTarget as HTMLInputElement
-    if (input.files && input.files[0]) {
-        const label = $('#upload-label')[0] as HTMLLabelElement;
-        const file = input.files[0];
-        label.innerText = file.name;
-        setImagePreview($('#imageResult')[0] as HTMLImageElement, file)
-    }
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    const label = $('#upload-label')[0] as HTMLLabelElement;
+    label.innerText = file.name;
+    setImagePreview($('#imageResult')[0] as HTMLImageElement, file)
 });
 
 function setImagePreview(preview: HTMLImageElement, file: File) {
@@ -39,12 +42,28 @@ function setImagePreview(preview: HTMLImageElement, file: File) {
     };
     reader.readAsDataURL(file);
 }
+
+/**
+ * Update form state with a new title.
+ */
 $('#title').on('input', function (e) {
     const input = e.currentTarget as HTMLInputElement;
     formState.title = input.value;
     updateViewState();
 });
 
+/**
+ * Update form state with a new caption.
+ */
+$('#caption').on('input', function (e) {
+    const input = e.currentTarget as HTMLInputElement;
+    formState.caption = input.value;
+    updateViewState();
+});
+
+/**
+ * Enable/disable submit button.
+ */
 function updateViewState() {
     console.log(JSON.stringify(formState));
     const submit = $('#submit')[0] as HTMLButtonElement;
@@ -55,6 +74,9 @@ function updateViewState() {
     }
 }
 
+/**
+ * Handle post submit
+ */
 $('#submit').on('click', function (e) {
     if (!formState.title && !formState.image) return;
     new PostService().newPost({
@@ -78,6 +100,9 @@ $('#submit').on('click', function (e) {
     })
 });
 
+/**
+ * Return to index.
+ */
 function goToIndex() {
     window.location.href = './index.html';
 }
