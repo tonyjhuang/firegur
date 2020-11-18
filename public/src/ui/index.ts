@@ -1,51 +1,12 @@
-export { };
-
 import '@firebase/analytics'
 import '@firebase/auth'
+import firebase from 'firebase'
 import { firebaseApp } from '../firebase_config'
 import { UserService } from '../services/user_service'
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    const loadEl = document.querySelector('#load');
-    if (!loadEl) return;
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-    // // The Firebase SDK is initialized and available here!
-    //
-    // firebase.auth().onAuthStateChanged(user => { });
-    // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-    // firebase.firestore().doc('/foo/bar').get().then(() => { });
-    // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-    // firebase.messaging().requestPermission().then(() => { });
-    // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-    // firebase.analytics(); // call to activate
-    // firebase.analytics().logEvent('tutorial_completed');
-    // firebase.performance(); // call to activate
-    //
-    // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-    try {
-        let app = firebaseApp;;
-        let features = [
-            'auth',
-            'database',
-            'firestore',
-            'functions',
-            'messaging',
-            'storage',
-            'analytics',
-            'remoteConfig',
-            'performance',
-        ].filter(feature => app.hasOwnProperty(feature))
-        loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-    } catch (e) {
-        console.error(e);
-        loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-    }
-});
-
 var currentUid: string | null = null;
-firebaseApp.auth().onAuthStateChanged(function(user) {
+firebaseApp.auth().onAuthStateChanged(function(user: firebase.User | null) {
     var userService = new UserService();
     if (user && user.uid != currentUid) {
         // TODO: Hide sign-in button and show sign-out button

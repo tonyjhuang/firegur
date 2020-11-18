@@ -1,7 +1,5 @@
-export { };
-
 import $ from 'jquery';
-import { PostService, PostPrivacy } from './post_service'
+import { PostService, PostPrivacy } from '../services/post_service'
 
 interface FormState {
     title: string,
@@ -123,7 +121,7 @@ function updateViewState() {
  */
 $('#submit').on('click', async function (e) {
     if (!formState.title && !formState.image) return;
-    await new PostService().newPost({
+    await new PostService().create({
         title: formState.title,
         caption: formState.caption,
         image: formState.image!,

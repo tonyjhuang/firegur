@@ -1,9 +1,7 @@
-export {};
-
-import firebase from "firebase/app";
-import "firebase/auth"
-import * as firebaseui from "firebaseui";
-import { firebaseApp } from './firebase_config'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import * as firebaseui from 'firebaseui'
+import { firebaseApp } from '../firebase_config'
 
 var ui = new firebaseui.auth.AuthUI(firebaseApp.auth());
 

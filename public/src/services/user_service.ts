@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
-import { firebaseApp } from './firebase_config'
-import firebase from 'firebase'
-import "firebase/auth"
+import { firebaseApp } from '../firebase_config'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 export interface CreateUserOptions {
     username: string,
@@ -16,6 +15,11 @@ export interface NewUserCallback {
     onError(e: Error): void
 }
 
+export interface User {
+    username: string,
+    id: string
+}
+
 export class UserService {
     /**
      * Uploads an image and creates a new Post for it.
@@ -28,16 +32,16 @@ export class UserService {
 
     /**
      * Checks if the user exists in Firestore.
-     */ 
-    isUserRegistered(id: string) : boolean {
+     */
+    isUserRegistered(id: string): boolean {
         const firestore = firebaseApp.firestore();
         var docRef = firestore.collection('users').doc(id);
-        docRef.get().then(function(doc) {
-            if(doc.exists) {
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
                 return true;
             }
             return false;
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log("Error getting document:", error);
         });
         return false;
@@ -49,17 +53,33 @@ export class UserService {
         // Add groupIds to user's array
     }
 
-    getCurrentUser(): Promise<firebase.User> {
-        return new Promise((resolve, reject) => {
-            firebaseApp.auth().onAuthStateChanged((currentUser) => {
-                if (!currentUser) {
-                    return reject(new Error('Please login first.'));
-                }
-                resolve(currentUser);
-            });
-        })
-        
+    getCurrentUser(): Promise<User> {
+        return fetchCurrentUser()
+            .then((user: firebase.User) => this.getUser(user.uid));
     }
+
+    async getUser(userId: string): Promise<User> {
+        const firestore = firebaseApp.firestore();
+        const docRef = await firestore.doc(`users/${userId}`).get();
+        if (!docRef.exists) {
+            return Promise.reject(new Error('User not found.'));
+        }
+        return Promise.resolve({
+            username: docRef.data()!.username,
+            id: docRef.id
+        });
+    }
+}
+
+function fetchCurrentUser(): Promise<firebase.User> {
+    return new Promise((resolve, reject) => {
+        firebaseApp.auth().onAuthStateChanged((currentUser) => {
+            if (!currentUser) {
+                return reject(new Error('Please login first.'));
+            }
+            return resolve(currentUser!);
+        });
+    });
 }
 
 /**
