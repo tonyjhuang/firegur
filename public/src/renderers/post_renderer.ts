@@ -1,17 +1,22 @@
 import { firebaseApp } from '../firebase_config'
 import postTemplateString from '../ui/templates/post.html'
 import { Post } from '../services/post_service'
-import $ from 'jquery';
 
 export class PostRenderer {
     async renderPost(post: Post, pid: string, feedPost: boolean): Promise<string> {
         // Deep copy string.
         let tmpl = postTemplateString.slice();
         if (feedPost) {
-            const titlePostElement = $('#title-post') 
-            $('#post-title').attr("href", "post.html?pid=" + pid);
+            const hrefLink = "href=\"./post.html?pid=" + pid + "\"";
+            var linkedTitle = "<a " + hrefLink + ">" + post.title + "</a>";
+            tmpl = tmpl.replace('${title}', linkedTitle);
+
+        } else {
+            tmpl = tmpl.replace('${title}', post.title);
         }
 
+        // TODO: Add Audience field to Post and replace ${audience} text.
+        tmpl = tmpl.replace('${audience}', "Public");
         tmpl = tmpl.replace('${title}', post.title);
 
         if (post.caption) {
