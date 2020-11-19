@@ -1,13 +1,8 @@
 import $ from 'jquery';
-import { firebaseApp } from '../firebase_config'
-import 'firebase/storage'
-import postTemplateString from './templates/post.html'
 import { Post, PostService } from '../services/post_service'
 import { PostRenderer } from '../renderers/post_renderer'
 import { initToolbar } from './auth'
 import confetti from 'canvas-confetti'
-
-
 
 /** On DOM ready. */
 $(async function () {
@@ -30,6 +25,9 @@ function getPostIdFromSearchParams(): string | null {
     return params.get('pid');
 }
 
+/**
+ * Fetches and renders the requested post.
+ */
 async function loadPost(postId: string) {
     const postService = new PostService();
     const post = await postService.get(postId);
@@ -39,6 +37,9 @@ async function loadPost(postId: string) {
     await celebratePost(post);
 }
 
+/**
+ * Party time!
+ */
 async function celebratePost(post: Post) {
     if (post.seen) return;
     confetti({
