@@ -5,7 +5,6 @@ import 'firebase/storage'
 import 'firebase/firestore'
 import { User, UserService } from './user_service'
 
-
 export enum PostPrivacy {
     Private = 1,
     Public,
@@ -26,6 +25,7 @@ export interface PostAuthor {
 }
 
 export interface Post {
+    id: string,
     title: string,
     caption?: string,
     author: PostAuthor
@@ -66,6 +66,7 @@ export class PostService {
         const data = postDoc.data()!;
         const { username, id } = await this.userService.getUser(data.authorId);
         return {
+            id: postId,
             title: data.title,
             caption: data.caption,
             timestamp: data.uploadedAt.toDate(),

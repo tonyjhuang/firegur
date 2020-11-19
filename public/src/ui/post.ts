@@ -1,9 +1,12 @@
 import $ from 'jquery';
 import { firebaseApp } from '../firebase_config'
+import 'firebase/storage'
 import postTemplateString from './templates/post.html'
 import { Post, PostService } from '../services/post_service'
+import { PostRenderer } from '../renderers/post_renderer'
 import { initToolbar } from './auth'
 import confetti from 'canvas-confetti'
+
 
 
 /** On DOM ready. */
@@ -32,37 +35,17 @@ async function loadPost(postId: string) {
     const post = await postService.get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(await renderPost(post));
-    if (!post.seen) {
-        confetti({
-            particleCount: 150,
-            spread: 180
-        });
-        await postService.markAsSeen(postId);
-    }
+    $('#post-container').append(await new PostRenderer().renderPost(post, postId, /* isFeedPost= */ false));
+    await celebratePost(post);
 }
 
-async function renderPost(post: Post): Promise<string> {
-    // Deep copy string.
-    let tmpl = postTemplateString.slice();
-    tmpl = tmpl.replace('${title}', post.title);
-    if (post.caption) {
-        tmpl = tmpl.replace('${caption}', post.caption);
-    } else {
-        console.log($(tmpl).remove('#caption').prop('outerHtml'));
-        $('#caption').remove();
-    }
-    tmpl = tmpl.replace('${username}', post.author.username);
-    tmpl = tmpl.replace('${timestamp}', post.timestamp.toDateString());
-
-    const imageSrc: string = await getImageSrc(post);
-    tmpl = tmpl.replace('${imageSrc}', imageSrc);
-    return tmpl;
-}
-
-function getImageSrc(post: Post): Promise<string> {
-    const imageRef = firebaseApp.storage().ref(post.url);
-    return imageRef.getDownloadURL();
+async function celebratePost(post: Post) {
+    if (post.seen) return;
+    confetti({
+        particleCount: 150,
+        spread: 180
+    });
+    await new PostService().markAsSeen(post.id);
 }
 
 function hideSpinner() {
