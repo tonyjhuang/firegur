@@ -4,5 +4,5 @@ import '@firebase/auth'
 import { initToolbar } from './auth'
 
 $(async function () {
-    await initToolbar($('#signin')[0], $('#signout')[0]);
+    initToolbar($('#signin')[0], $('#signout')[0]);
 });

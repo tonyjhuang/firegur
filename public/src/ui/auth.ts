@@ -2,7 +2,7 @@ import $ from 'jquery';
 import firebase from 'firebase/app'
 import '@firebase/auth'
 import { firebaseApp } from '../firebase_config'
-import { User, UserService } from '../services/user_service'
+import { UserService } from '../services/user_service'
 
 
 /**
