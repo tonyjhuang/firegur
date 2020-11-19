@@ -31,6 +31,7 @@ export interface Post {
     author: PostAuthor
     url: string
     timestamp: Date
+    audience: string
 }
 
 export class PostService {
@@ -73,7 +74,8 @@ export class PostService {
             author: {
                 username,
                 id
-            }
+            },
+            audience: data.audience
         }
     }
 }

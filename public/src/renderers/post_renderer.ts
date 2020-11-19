@@ -15,8 +15,7 @@ export class PostRenderer {
             tmpl = tmpl.replace('${title}', post.title);
         }
 
-        // TODO: Add Audience field to Post and replace ${audience} text.
-        tmpl = tmpl.replace('${audience}', "Public");
+        tmpl = tmpl.replace('${audience}', post.audience);
         tmpl = tmpl.replace('${title}', post.title);
 
         if (post.caption) {
