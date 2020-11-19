@@ -31,13 +31,13 @@ async function renderPosts(postsSnapshot: firebase.firestore.QuerySnapshot<fireb
             try {
                 const post = await new PostService().get(postId);
                 console.log(JSON.stringify(post));
-                hideSpinner();
                 $('#feed-container').append(await new PostRenderer().renderPost(post, postId, /* isFeedPost= */ true));
             } catch (e) {
                 alert((e as Error).message);
             }
         }
     });
+    hideSpinner();
 }
 
 function hideSpinner() {
