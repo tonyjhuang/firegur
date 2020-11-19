@@ -3,7 +3,7 @@ import { firebaseApp } from '../firebase_config'
 import { UserService } from '../services/user_service'
 
 const SIGNIN_ELEMENT = `<a class="btn btn-sm btn-link" href="./signin.html" id="signin" >Sign In</a>`;
-const SIGNOUT_ELEMENT = `<a class="btn btn-sm btn-link" id="signout">Sign Out</a>`;
+const SIGNOUT_ELEMENT = `<a class="btn btn-sm btn-link" id="signout">Sign Out</a><span class="align-middle" style="font-size: small">\${username}</span>`;
 
 interface LoginState {
     isLoggedIn: boolean,
@@ -25,7 +25,7 @@ export async function initToolbar(container: HTMLElement) {
     try {
         const user = await new UserService().getCurrentUser();
         loginState.isLoggedIn = true;
-        loginState.username = user.username;
+        loginState.username = user.username || 'Anonymous';
     } catch (e) {
         // User not logged in.
         // Intentionally left blank.
@@ -38,7 +38,9 @@ function updateViewState() {
     // Clear container.
     _container.innerHTML = '';
     if (loginState.isLoggedIn) {
-        $(_container).append(SIGNOUT_ELEMENT);
+        let tmpl = SIGNOUT_ELEMENT.slice();
+        tmpl = tmpl.replace('${username}', loginState.username!);
+        $(_container).append(tmpl);
         $('#signout').on('click', function (e) {
             firebaseApp.auth().signOut();
             loginState.isLoggedIn = false;
