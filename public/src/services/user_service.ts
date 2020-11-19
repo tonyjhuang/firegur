@@ -4,13 +4,13 @@ import 'firebase/auth'
 import 'firebase/firestore'
 
 export interface CreateUserOptions {
-    username: string,
-    // groups: array string
+    username: string
 }
 
 export interface User {
     username: string,
-    id: string
+    id: string,
+    groups: Array<string>
 }
 
 export class UserService {
@@ -25,14 +25,29 @@ export class UserService {
         await firestore.collection('users').doc(userId).set(data);
         return {
             username: options.username,
-            id: userId
+            id: userId,
+            groups: []
         };
     }
 
-    // TODO: Implement adding group to user.
-    addGroupToUser(userId: string, groupIds: String[]) {
-        // Get user's reference in Firestore
-        // Add groupIds to user's array
+    /**
+     * Adds a new group to a user.
+     */
+    async addUserGroup(userId: string, group: string): Promise<void> {
+        const firestore = firebaseApp.firestore();
+        return firestore.doc(`users/${userId}`).update({
+            groups: firebase.firestore.FieldValue.arrayUnion(group)
+        });
+    }
+
+    /**
+     * Removes a group from a user.
+     */
+    async removeUserGroup(userId: string, group: string): Promise<void> {
+        const firestore = firebaseApp.firestore();
+        return firestore.doc(`users/${userId}`).update({
+            groups: firebase.firestore.FieldValue.arrayRemove(group)
+        });
     }
 
     /**
@@ -57,7 +72,8 @@ export class UserService {
         }
         return Promise.resolve({
             username: docRef.data()!.username,
-            id: docRef.id
+            id: docRef.id,
+            groups: docRef.data()!.groups || []
         });
     }
 }
