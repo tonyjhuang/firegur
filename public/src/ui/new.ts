@@ -156,7 +156,7 @@ function setProgressBarPercentage(progress: number) {
  * Return to index.
  */
 function goToPost(postId: string) {
-    window.location.href = `./post.html?pid=${postId}`;
+    window.location.href = `./post.html?pid=${postId}&isNew=true`;
 }
 
 $('.privacy-button').on('click', function (e) {

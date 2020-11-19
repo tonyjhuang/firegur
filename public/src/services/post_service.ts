@@ -30,7 +30,8 @@ export interface Post {
     caption?: string,
     author: PostAuthor
     url: string
-    timestamp: Date
+    timestamp: Date,
+    seen: boolean
 }
 
 export class PostService {
@@ -72,8 +73,13 @@ export class PostService {
             author: {
                 username,
                 id
-            }
+            },
+            seen: data.seen
         }
+    }
+    async markAsSeen(postId: string): Promise<void> {
+        const firestore = firebaseApp.firestore();
+        return firestore.doc(`posts/${postId}`).update({seen: true});
     }
 }
 
@@ -123,7 +129,8 @@ function savePost(user: User, path: string, options: CreatePostOptions): Promise
         title: options.title,
         audience: privacyToAudience(options.privacy, user, options.groupId),
         uploadedAt: firebase.firestore.Timestamp.fromDate(new Date()),
-        authorId: user.id
+        authorId: user.id,
+        seen: false
     };
     if (options.caption) data.caption = options.caption;
 

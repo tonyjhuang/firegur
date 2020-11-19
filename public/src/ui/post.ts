@@ -1,10 +1,9 @@
 import $ from 'jquery';
 import { firebaseApp } from '../firebase_config'
-import firebase from 'firebase/app'
-import 'firebase/storage'
 import postTemplateString from './templates/post.html'
 import { Post, PostService } from '../services/post_service'
 import { initToolbar } from './auth'
+import confetti from 'canvas-confetti'
 
 
 /** On DOM ready. */
@@ -29,10 +28,18 @@ function getPostIdFromSearchParams(): string | null {
 }
 
 async function loadPost(postId: string) {
-    const post = await new PostService().get(postId);
+    const postService = new PostService();
+    const post = await postService.get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
     $('#post-container').append(await renderPost(post));
+    if (!post.seen) {
+        confetti({
+            particleCount: 150,
+            spread: 180
+        });
+        await postService.markAsSeen(postId);
+    }
 }
 
 async function renderPost(post: Post): Promise<string> {
@@ -42,6 +49,7 @@ async function renderPost(post: Post): Promise<string> {
     if (post.caption) {
         tmpl = tmpl.replace('${caption}', post.caption);
     } else {
+        console.log($(tmpl).remove('#caption').prop('outerHtml'));
         $('#caption').remove();
     }
     tmpl = tmpl.replace('${username}', post.author.username);
