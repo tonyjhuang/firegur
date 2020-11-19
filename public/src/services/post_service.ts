@@ -5,7 +5,6 @@ import 'firebase/storage'
 import 'firebase/firestore'
 import { User, UserService } from './user_service'
 
-
 export enum PostPrivacy {
     Private = 1,
     Public,
