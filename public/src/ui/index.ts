@@ -5,7 +5,7 @@ import { initToolbar } from './auth'
 import { FeedService } from '../services/feed_service'
 
 $(async function () {
-    initToolbar($('#signin')[0], $('#signout')[0]);
+    await initToolbar($('#auth-container')[0]);
     var feedService = new FeedService();
     await feedService.loadPublicPosts();
 });

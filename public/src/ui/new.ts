@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import { PostService, PostPrivacy } from '../services/post_service'
+import { initToolbar } from './auth'
 
 interface FormState {
     title: string,
@@ -24,7 +25,8 @@ const BUTTON_ID_TO_PRIVACY: Record<string, PostPrivacy> = {
 }
 
 /** On DOM ready. */
-$(function () {
+$(async function () {
+    await initToolbar($('#auth-container')[0]),
     updateViewState();
 });
 
@@ -134,6 +136,7 @@ $('#submit').on('click', async function (e) {
         }).catch((e: Error) => {
             alert(e.message);
             console.warn(e);
+            setProgressBarPercentage(0);
         });
 });
 
