@@ -7,6 +7,7 @@ import { Post, PostService } from '../services/post_service'
 import { initToolbar } from './auth'
 
 
+
 /** On DOM ready. */
 $(async function () {
     initToolbar($('#signin')[0], $('#signout')[0]);
@@ -31,29 +32,7 @@ async function loadPost(postId: string) {
     const post = await new PostService().get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(await renderPost(post));
-}
-
-async function renderPost(post: Post): Promise<string> {
-    // Deep copy string.
-    let tmpl = postTemplateString.slice();
-    tmpl = tmpl.replace('${title}', post.title);
-    if (post.caption) {
-        tmpl = tmpl.replace('${caption}', post.caption);
-    } else {
-        $('#caption').remove();
-    }
-    tmpl = tmpl.replace('${username}', post.author.username);
-    tmpl = tmpl.replace('${timestamp}', post.timestamp.toDateString());
-
-    const imageSrc: string = await getImageSrc(post);
-    tmpl = tmpl.replace('${imageSrc}', imageSrc);
-    return tmpl;
-}
-
-function getImageSrc(post: Post): Promise<string> {
-    const imageRef = firebaseApp.storage().ref(post.url);
-    return imageRef.getDownloadURL();
+    $('#post-container').append(await new PostService().renderPost(post, postId, false));
 }
 
 function hideSpinner() {

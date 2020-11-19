@@ -2,7 +2,10 @@ import $ from 'jquery';
 import '@firebase/analytics'
 import '@firebase/auth'
 import { initToolbar } from './auth'
+import { FeedService } from '../services/feed_service'
 
 $(async function () {
     initToolbar($('#signin')[0], $('#signout')[0]);
+    var feedService = new FeedService();
+    await feedService.loadPublicPosts();
 });
