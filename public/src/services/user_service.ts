@@ -8,14 +8,6 @@ export interface CreateUserOptions {
     // groups: array string
 }
 
-/**
- * Callback handler for create a new post.
- */
-export interface NewUserCallback {
-    onComplete(): void
-    onError(e: Error): void
-}
-
 export interface User {
     username: string,
     id: string
@@ -25,10 +17,16 @@ export class UserService {
     /**
      * Creates and stores a new user.
      */
-    async newUser(userId: string, options: CreateUserOptions, callback: NewUserCallback) {
-        await createUser(userId, options)
-            .then(callback.onComplete)
-            .catch(callback.onError);
+    async newUser(userId: string, options: CreateUserOptions): Promise<User> {
+        const firestore = firebaseApp.firestore();
+        const data: any = {
+            username: options.username,
+        };
+        await firestore.collection('users').doc(userId).set(data);
+        return {
+            username: options.username,
+            id: userId
+        };
     }
 
     /**
@@ -36,15 +34,10 @@ export class UserService {
      */
     async isUserRegistered(id: string): Promise<boolean> {
         const firestore = firebaseApp.firestore();
-        var docRef = firestore.collection('users').doc(id);
-        docRef.get().then(function (doc) {
-            if (doc.exists) {
-                return true;
-            }
-            return false;
-        }).catch(function (error) {
-            console.log("Error getting document:", error);
-        });
+        const docRef = await firestore.collection('users').doc(id).get();
+        if (docRef.exists) {
+            return true;
+        }
         return false;
     }
 
@@ -81,15 +74,4 @@ function fetchCurrentUser(): Promise<firebase.User> {
             return resolve(currentUser!);
         });
     });
-}
-
-/**
- * Creates a new User document in Firestore.
- */
-function createUser(userId: string, options: CreateUserOptions): Promise<void> {
-    const firestore = firebaseApp.firestore();
-    const data: any = {
-        username: options.username,
-    };
-    return firestore.collection('users').doc(userId).set(data);
 }
