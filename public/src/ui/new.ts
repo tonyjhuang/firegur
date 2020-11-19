@@ -136,6 +136,7 @@ $('#submit').on('click', async function (e) {
         }).catch((e: Error) => {
             alert(e.message);
             console.warn(e);
+            setProgressBarPercentage(0);
         });
 });
 
