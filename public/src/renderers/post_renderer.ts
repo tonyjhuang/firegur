@@ -3,10 +3,10 @@ import postTemplateString from '../ui/templates/post.html'
 import { Post } from '../services/post_service'
 
 export class PostRenderer {
-    async renderPost(post: Post, pid: string, feedPost: boolean): Promise<string> {
+    async renderPost(post: Post, pid: string, isFeedPost: boolean): Promise<string> {
         // Deep copy string.
         let tmpl = postTemplateString.slice();
-        if (feedPost) {
+        if (isFeedPost) {
             const hrefLink = "href=\"./post.html?pid=" + pid + "\"";
             var linkedTitle = "<a " + hrefLink + ">" + post.title + "</a>";
             tmpl = tmpl.replace('${title}', linkedTitle);

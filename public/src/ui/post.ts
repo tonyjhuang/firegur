@@ -31,7 +31,7 @@ async function loadPost(postId: string) {
     const post = await new PostService().get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(await new PostRenderer().renderPost(post, postId, false));
+    $('#post-container').append(await new PostRenderer().renderPost(post, postId, /* isFeedPost= */ false));
 }
 
 function hideSpinner() {
