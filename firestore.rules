@@ -1,8 +1,65 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    //////////////////////
+    // Users.
+    //////////////////////
+    match /users/{userId} {
+      // Users are globally readable.
+      allow read: if true;
+      allow write: if isUserAuthed() && 
+                      request.auth.uid == userId;
+    }
+
+    //////////////////////
+    // Posts.
+    //////////////////////
+
+    // Public posts
+    match /posts/{postId} {
+      allow read: if isPublicPost();
+      allow create: if isUserAuthed() &&
+                       request.resource.data.audience == 'public';
+      allow update, delete: if isPublicPost() &&
+                               isUserAuthed() && 
+                               request.auth.uid == resource.data.authorId;
+    }
+    // Private posts
+    match /posts/{postId} {
+      // Users can only read and modify posts that are private to them.
+      allow read, update, delete: if isUserAuthed() && 
+                                    isPrivatePost();
+      // Users can only create posts that are private to them.
+      allow create: if isUserAuthed() &&
+                       request.resource.data.audience == request.auth.uid;
+    }
+    // Group posts
+    match /posts/{postId} {
+      // Users can only read posts in groups they are in.
+      allow read: if isUserInGroup(resource.data.audience);
+      // Users can only write to groups if they are in them.
+      allow create: if isUserInGroup(request.resource.data.audience);
+      // Users can modify group posts they created.
+      allow update, delete: if isUserInGroup(request.resource.data.audience) &&
+                            resource.data.authorId == request.auth.uid;
+    }
+
+    //////////////////////
+    // Functions.
+    //////////////////////
+    function isPublicPost() {
+      return resource.data.audience == 'public';
+    }
+    function isPrivatePost() {
+      return resource.data.audience == request.auth.uid;
+    }
+    function isUserAuthed() {
+      return request.auth != null;
+    }
+    function isUserInGroup(group) {
+      return isUserAuthed() &&
+             group in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.groups;
+                     
     }
   }
 }
