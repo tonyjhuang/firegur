@@ -8,6 +8,6 @@ import { FeedService } from '../services/feed_service'
 $(async function () {
     await initToolbar($('#auth-container')[0]);
     var feedService = new FeedService();
-    await feedService.loadPublicPosts();
+    await feedService.loadAllPosts();
     await initGroups($('#groups-container')[0]);
 });
