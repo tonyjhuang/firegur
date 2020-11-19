@@ -4,6 +4,11 @@ import { PostRenderer } from '../renderers/post_renderer'
 import { initToolbar } from './auth'
 import confetti from 'canvas-confetti'
 
+/**
+ * If the post was created within the time threshold, celebrate!
+ */
+const CELEBRATION_THRESHOLD_SECONDS = 5;
+
 /** On DOM ready. */
 $(async function () {
     const postId = getPostIdFromSearchParams();
@@ -41,12 +46,14 @@ async function loadPost(postId: string) {
  * Party time!
  */
 async function celebratePost(post: Post) {
-    if (post.seen) return;
-    confetti({
-        particleCount: 150,
-        spread: 180
-    });
-    await new PostService().markAsSeen(post.id);
+    const now = new Date();
+    const timeElapsedSinceUploadInSeconds = (now.getTime() - post.timestamp.getTime()) / 1000;
+    if (timeElapsedSinceUploadInSeconds <= CELEBRATION_THRESHOLD_SECONDS) {
+        confetti({
+            particleCount: 150,
+            spread: 180
+        });
+    }
 }
 
 function hideSpinner() {

@@ -30,8 +30,7 @@ export interface Post {
     caption?: string,
     author: PostAuthor
     url: string
-    timestamp: Date,
-    seen: boolean
+    timestamp: Date
 }
 
 export class PostService {
@@ -74,13 +73,8 @@ export class PostService {
             author: {
                 username,
                 id
-            },
-            seen: data.seen
+            }
         }
-    }
-    async markAsSeen(postId: string): Promise<void> {
-        const firestore = firebaseApp.firestore();
-        return firestore.doc(`posts/${postId}`).update({seen: true});
     }
 }
 
