@@ -9,14 +9,15 @@ import { initToolbar } from './auth'
 
 /** On DOM ready. */
 $(async function () {
-    initToolbar($('#signin')[0], $('#signout')[0]);
     const postId = getPostIdFromSearchParams();
     if (!postId) {
         goTo404Error();
         return;
     }
     try {
-        await loadPost(postId);
+        await Promise.all([
+            initToolbar($('#auth-container')[0]),
+            loadPost(postId)]);
     } catch (e) {
         alert((e as Error).message);
     }

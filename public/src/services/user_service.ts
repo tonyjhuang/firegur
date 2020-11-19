@@ -29,29 +29,26 @@ export class UserService {
         };
     }
 
-    /**
-     * Checks if the user exists in Firestore.
-     */
-    async isUserRegistered(id: string): Promise<boolean> {
-        const firestore = firebaseApp.firestore();
-        const docRef = await firestore.collection('users').doc(id).get();
-        if (docRef.exists) {
-            return true;
-        }
-        return false;
-    }
-
     // TODO: Implement adding group to user.
     addGroupToUser(userId: string, groupIds: String[]) {
         // Get user's reference in Firestore
         // Add groupIds to user's array
     }
 
+    /**
+     * Returns the currently logged in user. Registers the user if they are not already.
+     */
     getCurrentUser(): Promise<User> {
         return fetchCurrentUser()
-            .then((user: firebase.User) => this.getUser(user.uid));
+            .then((user: firebase.User) => {
+                return this.getUser(user.uid)
+                    .catch(() => this.newUser(user.uid, { username: getDisplayName(user) }));
+            });
     }
 
+    /**
+     * Returns a stored user from the database.
+     */
     async getUser(userId: string): Promise<User> {
         const firestore = firebaseApp.firestore();
         const docRef = await firestore.doc(`users/${userId}`).get();
@@ -74,4 +71,15 @@ function fetchCurrentUser(): Promise<firebase.User> {
             return resolve(currentUser!);
         });
     });
+}
+
+
+function getDisplayName(user: firebase.User): string {
+    if (user.displayName) {
+        return user.displayName;
+    } else if (user.email) {
+        return user.email;
+    } else {
+        return "";
+    }
 }
