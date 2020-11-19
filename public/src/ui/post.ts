@@ -1,9 +1,7 @@
 import $ from 'jquery';
-import { firebaseApp } from '../firebase_config'
-import firebase from 'firebase/app'
 import 'firebase/storage'
-import postTemplateString from './templates/post.html'
-import { Post, PostService } from '../services/post_service'
+import { PostService } from '../services/post_service'
+import { PostRenderer } from '../renderers/post_renderer'
 import { initToolbar } from './auth'
 
 
@@ -32,7 +30,7 @@ async function loadPost(postId: string) {
     const post = await new PostService().get(postId);
     console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(await new PostService().renderPost(post, postId, false));
+    $('#post-container').append(await new PostRenderer().renderPost(post, postId, false));
 }
 
 function hideSpinner() {

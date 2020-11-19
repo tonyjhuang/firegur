@@ -1,6 +1,7 @@
 import firebase from 'firebase'
 import { firebaseApp } from '../firebase_config';
-import { PostService } from './post_service';
+import { PostService } from './post_service'
+import { PostRenderer } from '../renderers/post_renderer';
 import $ from 'jquery';
 
 var db = firebaseApp.firestore();
@@ -31,7 +32,7 @@ async function renderPosts(postsSnapshot: firebase.firestore.QuerySnapshot<fireb
                 const post = await new PostService().get(postId);
                 console.log(JSON.stringify(post));
                 // hideSpinner();
-                $('#feed-container').append(await new PostService().renderPost(post, postId, true));
+                $('#feed-container').append(await new PostRenderer().renderPost(post, postId, true));
             } catch (e) {
                 alert((e as Error).message);
             }
