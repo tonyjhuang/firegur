@@ -38,15 +38,22 @@ function updateViewState() {
     // Clear container.
     _container.innerHTML = '';
     if (loginState.isLoggedIn) {
-        let tmpl = SIGNOUT_ELEMENT.slice();
-        tmpl = tmpl.replace('${username}', loginState.username!);
-        $(_container).append(tmpl);
+        // User is logged in.
+        $(_container).append(renderSignout());
+        // Attach signout click listener.
         $('#signout').on('click', function (e) {
             firebaseApp.auth().signOut();
             loginState.isLoggedIn = false;
             updateViewState();
         });
     } else {
+        // User is not logged in.
         $(_container).append(SIGNIN_ELEMENT);
     }
+}
+
+function renderSignout(): string {
+    let tmpl = SIGNOUT_ELEMENT.slice();
+    tmpl = tmpl.replace('${username}', loginState.username!);
+    return tmpl;
 }
