@@ -1,4 +1,16 @@
 {
-  "indexes": [],
-  "fieldOverrides": []
+    "indexes": [{
+        "collectionGroup": "posts",
+        "queryScope": "COLLECTION",
+        "fields": [{
+                "fieldPath": "audience",
+                "order": "ASCENDING"
+            },
+            {
+                "fieldPath": "uploadedAt",
+                "order": "DESCENDING"
+            }
+        ]
+    }],
+    "fieldOverrides": []
 }
