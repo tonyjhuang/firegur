@@ -7,8 +7,8 @@ export class PostRenderer {
         // Deep copy string.
         let tmpl = postTemplateString.slice();
         if (isFeedPost) {
-            const hrefLink = "href=\"./post.html?pid=" + pid + "\"";
-            var linkedTitle = "<a " + hrefLink + ">" + post.title + "</a>";
+            const hrefLink = `href="./post.html?pid=${pid}"`;
+            var linkedTitle = `<a ${hrefLink} class="link-unstyled" >${post.title}</a>`;
             tmpl = tmpl.replace('${title}', linkedTitle);
 
         } else {
@@ -24,7 +24,7 @@ export class PostRenderer {
             tmpl = tmpl.replace('${caption}', "");
         }
 
-        tmpl = tmpl.replace('${username}', post.author.username);
+        tmpl = tmpl.replace('${username}', post.author.username || 'Anonymous');
         tmpl = tmpl.replace('${timestamp}', post.timestamp.toDateString());
 
         const imageSrc: string = await getImageSrc(post);

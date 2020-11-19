@@ -25,6 +25,7 @@ export interface PostAuthor {
 }
 
 export interface Post {
+    id: string,
     title: string,
     caption?: string,
     author: PostAuthor
@@ -65,6 +66,7 @@ export class PostService {
         const data = postDoc.data()!;
         const { username, id } = await this.userService.getUser(data.authorId);
         return {
+            id: postId,
             title: data.title,
             caption: data.caption,
             timestamp: data.uploadedAt.toDate(),
@@ -124,7 +126,8 @@ function savePost(user: User, path: string, options: CreatePostOptions): Promise
         title: options.title,
         audience: privacyToAudience(options.privacy, user, options.groupId),
         uploadedAt: firebase.firestore.Timestamp.fromDate(new Date()),
-        authorId: user.id
+        authorId: user.id,
+        seen: false
     };
     if (options.caption) data.caption = options.caption;
 
