@@ -90,7 +90,7 @@ export class PostService {
         if (post.caption) {
             tmpl = tmpl.replace('${caption}', post.caption);
         } else {
-            $('#caption').remove();
+            tmpl = tmpl.replace('${caption}', "");
         }
 
         tmpl = tmpl.replace('${username}', post.author.username);
