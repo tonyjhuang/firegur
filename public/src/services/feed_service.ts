@@ -5,7 +5,7 @@ import { PostRenderer } from '../renderers/post_renderer';
 import { UserService } from './user_service'
 import $ from 'jquery';
 
-var db = firebaseApp.firestore();
+const db = firebaseApp.firestore();
 
 export class FeedService {
     /**
@@ -14,6 +14,14 @@ export class FeedService {
     async loadAllPosts() {
         const publicPosts = await getAllPosts();
         renderPosts(publicPosts);
+    }
+
+    /**
+     *  Load user's private posts.
+     */
+    async loadPrivatePosts(userId: string) {
+        const privatePosts = await getPrivatePosts(userId);
+        renderPosts(privatePosts);
     }
 }
 
@@ -29,10 +37,21 @@ async function getAllPosts() {
 }
 
 /**
+ * Queries Cloud Firestore for all posts available to the user.
+ */
+async function getPrivatePosts(userId: string) {
+    var postsRef = db.collection("posts");
+    var query = postsRef.where("authorId", "==", userId).where("audience", "==", userId).orderBy("uploadedAt", "desc");
+
+    return query.get();
+}
+
+/**
  * Renders all the posts and displays them as a feed.
  */
 async function renderPosts(postsSnapshot: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>) {
     postsSnapshot.forEach(async function(doc: any) {
+        //console.log(doc);
         var postId = doc.id;
         if (!postId) {
             // continue to next postId

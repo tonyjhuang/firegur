@@ -3,16 +3,18 @@ import { firebaseApp } from '../firebase_config'
 import { UserService } from '../services/user_service'
 
 const SIGNIN_ELEMENT = `<a class="btn btn-sm btn-link" href="./signin.html" id="signin" >Sign In</a>`;
-const SIGNOUT_ELEMENT = `<a class="btn btn-sm btn-link" id="signout">Sign Out</a><span class="align-middle" style="font-size: small">\${username}</span>`;
+const SIGNOUT_ELEMENT = `<a class="btn btn-sm btn-link" id="signout">Sign Out</a><span class="align-middle" style="font-size: small"><a href=\"./private.html?uid=\${userId}\">\${username}</a></span>`;
 
 interface LoginState {
     isLoggedIn: boolean,
-    username?: string
+    username?: string,
+    uid?: string
 }
 
 const loginState: LoginState = {
     isLoggedIn: false,
-    username: undefined
+    username: undefined,
+    uid: undefined
 };
 
 let _container: HTMLElement;
@@ -26,6 +28,7 @@ export async function initToolbar(container: HTMLElement) {
         const user = await new UserService().getCurrentUser();
         loginState.isLoggedIn = true;
         loginState.username = user.username || 'Anonymous';
+        loginState.uid = user.id;
     } catch (e) {
         // User not logged in.
         // Intentionally left blank.
@@ -55,5 +58,6 @@ function updateViewState() {
 function renderSignout(): string {
     let tmpl = SIGNOUT_ELEMENT.slice();
     tmpl = tmpl.replace('${username}', loginState.username!);
+    tmpl = tmpl.replace('${userId}', loginState.uid!);
     return tmpl;
 }
