@@ -13,6 +13,14 @@ export class FeedService {
         const feed = await new PostService().getAllForAudiences(eligibleAudiences);
         renderPosts(feed, container);
     }
+
+    /**
+     *  Load user's private posts.
+     */
+    async renderPrivateFeed(userId: string) {
+        const privatePosts = await new PostService().getPrivateForUser(userId);
+        renderPosts(privatePosts);
+    }
 }
 
 /**
