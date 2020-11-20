@@ -86,6 +86,24 @@ export class PostService {
         });
         return Promise.all(tasks);
     }
+
+    /**
+     * Returns all posts that are valid for a given set of audiences.
+     */
+    async getPrivateForUser(userId: string): Promise<Array<Post>> {
+        if (userId.length == 0) return Promise.resolve([]);
+        const firestore = firebaseApp.firestore();
+        var docs = await firestore.collection("posts")
+            .where("authorId", "==", userId)
+            .where("audience", "==", userId)
+            .orderBy("uploadedAt", "desc")
+            .get();
+
+        if (docs.empty) return Promise.resolve([]);
+        const tasks = docs.docs.map((doc: firebase.firestore.QueryDocumentSnapshot) => {
+            return docToPost(doc.id, doc.data(), this.userService);
+        });
+        return Promise.all(tasks);    }
 }
 
 /**
