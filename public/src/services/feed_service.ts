@@ -7,21 +7,21 @@ export class FeedService {
     /**
      * Fetches and renders a user's unified feed.
      */
-    async renderFeed() {
+    async renderFeed(container: HTMLElement) {
+        container.innerHTML = '';
         const eligibleAudiences = await generateAudienceArray();
         const feed = await new PostService().getAllForAudiences(eligibleAudiences);
-        renderPosts(feed);
+        renderPosts(feed, container);
     }
 }
 
 /**
  * Renders all the posts and displays them as a feed.
  */
-async function renderPosts(posts: Array<Post>) {
+async function renderPosts(posts: Array<Post>, container: HTMLElement) {
     const renderer = new PostRenderer();
     const renderedPostTasks = posts.map(post => renderer.renderPost(post, /* isFeedPost= */ true));
-    (await Promise.all(renderedPostTasks)).forEach(renderedPost => $('#feed-container').append(renderedPost));
-    hideSpinner();
+    (await Promise.all(renderedPostTasks)).forEach(renderedPost => $(container).append(renderedPost));
 }
 
 /**
@@ -36,8 +36,4 @@ async function generateAudienceArray() {
         // Not currently logged in, only show public posts.
         return ["public"];
     }
-}
-
-function hideSpinner() {
-    $('#spinner').remove();
 }
