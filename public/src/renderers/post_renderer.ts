@@ -4,11 +4,11 @@ import { Post } from '../services/post_service'
 import { UserService } from '../services/user_service'
 
 export class PostRenderer {
-    async renderPost(post: Post, pid: string, isFeedPost: boolean): Promise<string> {
+    async renderPost(post: Post, isFeedPost: boolean): Promise<string> {
         // Deep copy string.
         let tmpl = postTemplateString.slice();
         if (isFeedPost) {
-            const hrefLink = `href="./post.html?pid=${pid}"`;
+            const hrefLink = `href="./post.html?pid=${post.id}"`;
             var linkedTitle = `<a ${hrefLink} class="link-unstyled" >${post.title}</a>`;
             tmpl = tmpl.replace('${title}', linkedTitle);
 

@@ -57,27 +57,62 @@ export class PostService {
         return newPost.id;
     }
 
+    /**
+     * Returns a single stored Post.
+     */
     async get(postId: string): Promise<Post> {
         const firestore = firebaseApp.firestore();
         const postDoc = await firestore.collection('posts').doc(postId).get();
         if (!postDoc.exists) {
             return Promise.reject(new Error('Post not found.'))
         }
-        const data = postDoc.data()!;
-        const { username, id } = await this.userService.getUser(data.authorId);
-        return {
-            id: postId,
-            title: data.title,
-            caption: data.caption,
-            timestamp: data.uploadedAt.toDate(),
-            url: data.path,
-            author: {
-                username,
-                id
-            },
-            audience: data.audience
-        }
+        return docToPost(postId, postDoc.data()!, this.userService);
     }
+
+    /**
+     * Returns all posts that are valid for a given set of audiences.
+     */
+    async getAllForAudiences(audiences: Array<string>): Promise<Array<Post>> {
+        if (!audiences) return Promise.resolve([]);
+        const firestore = firebaseApp.firestore();
+        var docs = await firestore.collection("posts")
+            .where("audience", "in", audiences)
+            .orderBy("uploadedAt", "desc")
+            .get();
+
+        if (docs.empty) return Promise.resolve([]);
+        const tasks = docs.docs.map((doc: firebase.firestore.QueryDocumentSnapshot) => {
+            console.log(JSON.stringify({
+                id: doc.id,
+                title: doc.data().title,
+                timestamp: doc.data().uploadedAt.toDate()
+            }));
+            return docToPost(doc.id, doc.data(), this.userService);
+        });
+        return Promise.all(tasks);
+    }
+}
+
+/**
+ * Converts a Post Firestore document into a native Post object.
+ */
+async function docToPost(
+    postId: string,
+    postDoc: firebase.firestore.DocumentData,
+    userService: UserService): Promise<Post> {
+    const { username, id } = await userService.getUser(postDoc.authorId);
+    return {
+        id: postId,
+        title: postDoc.title,
+        caption: postDoc.caption,
+        timestamp: postDoc.uploadedAt.toDate(),
+        url: postDoc.path,
+        author: {
+            username,
+            id
+        },
+        audience: postDoc.audience
+    };
 }
 
 /**
@@ -135,7 +170,7 @@ function savePost(user: User, path: string, options: CreatePostOptions): Promise
 }
 
 function privacyToAudience(privacy: PostPrivacy, user: User, groupId?: string): string {
-    switch(privacy) {
+    switch (privacy) {
         case PostPrivacy.Public:
             return 'public';
         case PostPrivacy.Group:
