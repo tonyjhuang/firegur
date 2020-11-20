@@ -53,12 +53,13 @@ export class UserService {
     /**
      * Returns the currently logged in user. Registers the user if they are not already.
      */
-    getCurrentUser(): Promise<User> {
-        return fetchCurrentUser()
-            .then((user: firebase.User) => {
-                return this.getUser(user.uid)
-                    .catch(() => this.newUser(user.uid, { username: getDisplayName(user) }));
-            });
+    async getCurrentUser(): Promise<User> {
+        const user = await fetchCurrentUser();
+        try {
+            return this.getUser(user.uid);
+        } catch (e) {
+            return await this.newUser(user.uid, { username: getDisplayName(user) });
+        }
     }
 
     /**

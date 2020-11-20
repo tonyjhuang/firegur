@@ -17,7 +17,9 @@ export class PostRenderer {
         }
 
         var audienceName = await getAudienceName(post.audience);
-        tmpl = tmpl.replace('${audience}', audienceName);
+        if (audienceName) {
+            tmpl = tmpl.replace('${audience}', audienceName);
+        }
         tmpl = tmpl.replace('${title}', post.title);
 
         if (post.caption) {
@@ -42,12 +44,19 @@ function getImageSrc(post: Post): Promise<string> {
 
 // TODO: Adjust for better rendering of the audience (could run into errors if a groupId and userId are shared)
 async function getAudienceName(audience: string) {
-    var currentUser = await new UserService().getCurrentUser();
     if (audience == "public") {
         return "Public";
-    } else if (audience == currentUser.id) {
-        return "Private";
     } else {
-        return "Group";
+        const userService = new UserService();
+        try {
+            const currentUser = await userService.getCurrentUser();
+            if (currentUser && audience == currentUser.id) {
+                return "Private";
+            } else { // Returns group name as audience
+                return audience;
+            }
+        } catch (e) {
+            alert("Unable to load post since user is not logged in.")
+        }
     }
 }

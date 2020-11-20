@@ -23,6 +23,7 @@ export class FeedService {
 async function getAllPosts() {
     var postsRef = db.collection("posts");
     var eligibleAudiences = await generateAudienceArray();
+    console.log("eligibleAudiences");
     var query = postsRef.where("audience", "in", eligibleAudiences).orderBy("uploadedAt", "desc");
 
     return query.get();
@@ -52,9 +53,14 @@ async function renderPosts(postsSnapshot: firebase.firestore.QuerySnapshot<fireb
 /**
  * Gets the array of all audiences the user belongs to.
  */
-async function generateAudienceArray() : Promise<string []> {
-    var user = await new UserService().getCurrentUser();
-    return ["public", user.id].concat(user.groups);
+async function generateAudienceArray() {
+    const userService = new UserService();
+    try {
+        const user = await userService.getCurrentUser();
+        return ["public", user.id].concat(user.groups);
+    } catch (e) {
+        return ["public"];
+    }
 }
 
 function hideSpinner() {
