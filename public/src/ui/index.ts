@@ -10,4 +10,10 @@ $(async function () {
     var feedService = new FeedService();
     await feedService.loadAllPosts();
     await initGroups($('#groups-container')[0]);
+    hideSpinner();
 });
+
+
+function hideSpinner() {
+    $('#spinner').remove();
+}
