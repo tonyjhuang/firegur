@@ -51,7 +51,6 @@ async function getPrivatePosts(userId: string) {
  */
 async function renderPosts(postsSnapshot: firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>) {
     postsSnapshot.forEach(async function(doc: any) {
-        //console.log(doc);
         var postId = doc.id;
         if (!postId) {
             // continue to next postId
