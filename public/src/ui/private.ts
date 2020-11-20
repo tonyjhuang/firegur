@@ -2,7 +2,6 @@ import $ from 'jquery';
 import '@firebase/analytics'
 import '@firebase/auth'
 import { initToolbar } from './auth'
-import { initGroups } from './groups'
 import { FeedService } from '../services/feed_service'
 import { firebaseApp } from '../firebase_config'
 
