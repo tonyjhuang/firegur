@@ -16,8 +16,8 @@ $(async function () {
     try {
         await feedService.renderPrivateFeed(userId, $('#feed-container')[0]);
     } catch (e) {
-        alert(e);
-        console.error(e.message);
+        alert(e.message);
+        console.error(e);
     }
     hideSpinner();
 
