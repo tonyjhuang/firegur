@@ -90,7 +90,6 @@ $('#groupId').on('input', function (e) {
  * React to changes in form data.
  */
 function updateViewState() {
-    console.log(JSON.stringify(formState));
     const submit = $('#submit')[0] as HTMLButtonElement;
     // Enable/disable submit button
     if (formState.title && formState.image) {
@@ -131,7 +130,6 @@ $('#submit').on('click', async function (e) {
         groupId: formState.groupId
     }, setProgressBarPercentage)
         .then((postId) => {
-            console.log('done!')
             goToPost(postId);
         }).catch((e: Error) => {
             alert(e.message);
