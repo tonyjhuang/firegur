@@ -103,7 +103,8 @@ export class PostService {
         const tasks = docs.docs.map((doc: firebase.firestore.QueryDocumentSnapshot) => {
             return docToPost(doc.id, doc.data(), this.userService);
         });
-        return Promise.all(tasks);    }
+        return Promise.all(tasks);    
+    }
 }
 
 /**

@@ -17,9 +17,9 @@ export class FeedService {
     /**
      *  Load user's private posts.
      */
-    async renderPrivateFeed(userId: string) {
+    async renderPrivateFeed(userId: string, container: HTMLElement) {
         const privatePosts = await new PostService().getPrivateForUser(userId);
-        renderPosts(privatePosts);
+        renderPosts(privatePosts, container);
     }
 }
 
