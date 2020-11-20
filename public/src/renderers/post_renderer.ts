@@ -1,6 +1,7 @@
 import { firebaseApp } from '../firebase_config'
 import postTemplateString from '../ui/templates/post.html'
 import { Post } from '../services/post_service'
+import { UserService } from '../services/user_service'
 
 export class PostRenderer {
     async renderPost(post: Post, pid: string, isFeedPost: boolean): Promise<string> {
@@ -15,7 +16,10 @@ export class PostRenderer {
             tmpl = tmpl.replace('${title}', post.title);
         }
 
-        tmpl = tmpl.replace('${audience}', post.audience);
+        var audienceName = await getAudienceName(post.audience);
+        if (audienceName) {
+            tmpl = tmpl.replace('${audience}', audienceName);
+        }
         tmpl = tmpl.replace('${title}', post.title);
 
         if (post.caption) {
@@ -36,4 +40,23 @@ export class PostRenderer {
 function getImageSrc(post: Post): Promise<string> {
     const imageRef = firebaseApp.storage().ref(post.url);
     return imageRef.getDownloadURL();
+}
+
+// TODO: Adjust for better rendering of the audience (could run into errors if a groupId and userId are shared)
+async function getAudienceName(audience: string) {
+    if (audience == "public") {
+        return "Public";
+    } else {
+        const userService = new UserService();
+        try {
+            const currentUser = await userService.getCurrentUser();
+            if (currentUser && audience == currentUser.id) {
+                return "Private";
+            } else { // Returns group name as audience
+                return audience;
+            }
+        } catch (e) {
+            alert("Unable to load post since user is not logged in.")
+        }
+    }
 }
