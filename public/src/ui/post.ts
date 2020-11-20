@@ -36,9 +36,8 @@ function getPostIdFromSearchParams(): string | null {
 async function loadPost(postId: string) {
     const postService = new PostService();
     const post = await postService.get(postId);
-    console.log(JSON.stringify(post));
     hideSpinner();
-    $('#post-container').append(await new PostRenderer().renderPost(post, postId, /* isFeedPost= */ false));
+    $('#post-container').append(await new PostRenderer().renderPost(post, /* isFeedPost= */ false));
     await celebratePost(post);
 }
 

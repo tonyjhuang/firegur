@@ -13,7 +13,7 @@ $(async function () {
         goTo404Error();
         return;
     }
-    await feedService.loadPrivatePosts(userId);
+    await feedService.renderPrivateFeed(userId);
     await initGroups($('#groups-container')[0]);
     hideSpinner();
 });
