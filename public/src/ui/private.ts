@@ -2,8 +2,8 @@ import $ from 'jquery';
 import '@firebase/analytics'
 import '@firebase/auth'
 import { initToolbar } from './auth'
-import { initGroups } from './groups'
 import { FeedService } from '../services/feed_service'
+import { firebaseApp } from '../firebase_config'
 
 $(async function () {
     await initToolbar($('#auth-container')[0]);
@@ -13,9 +13,21 @@ $(async function () {
         goTo404Error();
         return;
     }
-    await feedService.renderPrivateFeed(userId);
-    await initGroups($('#groups-container')[0]);
+    try {
+        await feedService.renderPrivateFeed(userId, $('#feed-container')[0]);
+    } catch (e) {
+        alert(e.message);
+        console.error(e);
+    }
     hideSpinner();
+
+
+    // Handle signouts
+    firebaseApp.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            goToIndex();
+        }
+    });
 });
 
 function getUserIdFromSearchParams(): string | null {
@@ -28,8 +40,15 @@ function hideSpinner() {
 }
 
 /**
- * Return to index.
+ * Show 404.
  */
 function goTo404Error() {
     window.location.href = './404.html';
+}
+
+/**
+ * Return to index.
+ */
+function goToIndex() {
+    window.location.href = './index.html';
 }

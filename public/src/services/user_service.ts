@@ -56,9 +56,9 @@ export class UserService {
     async getCurrentUser(): Promise<User> {
         const user = await fetchCurrentUser();
         try {
-            return this.getUser(user.uid);
+            return await this.getUser(user.uid);
         } catch (e) {
-            return await this.newUser(user.uid, { username: getDisplayName(user) });
+            return this.newUser(user.uid, { username: getDisplayName(user) });
         }
     }
 

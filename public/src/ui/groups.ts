@@ -16,17 +16,20 @@ const groupsState: GroupsState = {
 };
 
 let _groupsContainer: HTMLElement;
+let _onGroupsChanged: (() => any) | undefined;
 
 const CHIPS_CONTAINER_ELEMENT = `<div class="chips chips-initial" id='chips-container'></div>`;
 
 /**
  * Entry point.
  */
-export async function initGroups(groupsContainer: HTMLElement) {
+export async function initGroups(groupsContainer: HTMLElement, onGroupsChanged?: () => any) {
     _groupsContainer = groupsContainer;
+    _onGroupsChanged = onGroupsChanged;
+    _groupsContainer.innerHTML = '';
     // React to auth state changes.
     firebaseApp.auth().onAuthStateChanged(() => {
-        render()
+        render();
     });
 }
 
@@ -79,6 +82,9 @@ async function onGroupAdded(this: M.Chips, element: Element, chip: Element) {
     await new UserService().addUserGroup(groupsState.userId!, group);
     groupsState.groups.push(group);
     updateViewState();
+    if (_onGroupsChanged) {
+        _onGroupsChanged();
+    }
 }
 
 /**
@@ -89,6 +95,9 @@ async function onGroupDeleted(this: M.Chips, element: Element, chip: Element) {
     await new UserService().removeUserGroup(groupsState.userId!, group);
     groupsState.groups = groupsState.groups.filter(g => g !== group);
     updateViewState();
+    if (_onGroupsChanged) {
+        _onGroupsChanged();
+    }
 }
 
 function getChipValue(chip: Element): string {
