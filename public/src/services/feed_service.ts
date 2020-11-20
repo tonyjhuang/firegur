@@ -21,6 +21,21 @@ export class FeedService {
         const privatePosts = await new PostService().getPrivateForUser(userId);
         renderPosts(privatePosts, container);
     }
+
+    /**
+     *  Load group feed that user belongs to.
+     */
+    async renderGroupFeed(groupId: string, container: HTMLElement) {
+        const userService = new UserService();
+
+        try {
+            const user = await userService.getCurrentUser();
+            const groupPosts = await new PostService().getGroupForUser(user, groupId);
+            renderPosts(groupPosts, container);
+        } catch (e) {
+            return Promise.reject(new Error('User is not logged in, unable to load group feed.'));
+        }
+    }
 }
 
 /**

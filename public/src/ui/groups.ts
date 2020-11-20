@@ -70,7 +70,8 @@ function updateViewState() {
         placeholder: 'Join a group',
         secondaryPlaceholder: '+group',
         onChipAdd: onGroupAdded,
-        onChipDelete: onGroupDeleted
+        onChipDelete: onGroupDeleted,
+        onChipSelect: onGroupSelected
     });
 }
 
@@ -100,6 +101,22 @@ async function onGroupDeleted(this: M.Chips, element: Element, chip: Element) {
     }
 }
 
+/**
+ * Handle the user clicking on a certain group.
+ */
+async function onGroupSelected(this: M.Chips, element: Element, chip: Element) {
+    const group = getChipValue(chip);
+    console.log(group + " has been selected.");
+    goToGroupFeed(group);
+}
+
 function getChipValue(chip: Element): string {
     return (chip as HTMLDivElement).innerHTML.split('<')[0];
+}
+
+/**
+ * Show 404.
+ */
+function goToGroupFeed(group: string) {
+    window.location.href = './group.html?groupid=' + group;
 }
