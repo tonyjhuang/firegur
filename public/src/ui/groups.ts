@@ -76,7 +76,6 @@ function updateViewState() {
  */
 async function onGroupAdded(this: M.Chips, element: Element, chip: Element) {
     const group = getChipValue(chip);
-    (group);
     await new UserService().addUserGroup(groupsState.userId!, group);
     groupsState.groups.push(group);
     updateViewState();
