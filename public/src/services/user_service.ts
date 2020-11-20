@@ -77,6 +77,13 @@ export class UserService {
             groups: docRef.data()!.groups || []
         });
     }
+
+    /**
+     *  Returns whether user belongs to the given group.
+     */
+    async isUserInGroup(user: User, group: string) {
+        return user.groups.includes(group);
+    }
 }
 
 function fetchCurrentUser(): Promise<firebase.User> {

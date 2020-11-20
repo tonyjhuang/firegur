@@ -105,6 +105,22 @@ export class PostService {
         });
         return Promise.all(tasks);    
     }
+
+    async getGroupForUser(user: User, groupId: string): Promise<Array<Post>> {
+        if (groupId.length == 0) return Promise.resolve([]);
+        if (!this.userService.isUserInGroup(user, groupId)) return Promise.resolve([]);
+        const firestore = firebaseApp.firestore();
+        var docs = await firestore.collection("posts")
+            .where("audience", "==", groupId)
+            .orderBy("uploadedAt", "desc")
+            .get();
+
+        if (docs.empty) return Promise.resolve([]);
+        const tasks = docs.docs.map((doc: firebase.firestore.QueryDocumentSnapshot) => {
+            return docToPost(doc.id, doc.data(), this.userService);
+        });
+        return Promise.all(tasks);   
+    }
 }
 
 /**

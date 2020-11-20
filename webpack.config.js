@@ -6,7 +6,8 @@ module.exports = {
         new: '/public/src/ui/new.ts',
         signin: '/public/src/ui/signin.ts',
         post: '/public/src/ui/post.ts',
-        private: '/public/src/ui/private.ts'
+        private: '/public/src/ui/private.ts',
+        group: '/public/src/ui/groupfeed.ts'
     },
     devtool: 'inline-source-map',
     module: {
