@@ -13,7 +13,12 @@ $(async function () {
         goTo404Error();
         return;
     }
-    await feedService.renderPrivateFeed(userId, $('#feed-container')[0]);
+    try {
+        await feedService.renderPrivateFeed(userId, $('#feed-container')[0]);
+    } catch (e) {
+        alert(e);
+        console.error(e.message);
+    }
     hideSpinner();
 
 
@@ -22,7 +27,7 @@ $(async function () {
         if (!user) {
             goToIndex();
         }
-     });
+    });
 });
 
 function getUserIdFromSearchParams(): string | null {
