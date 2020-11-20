@@ -76,7 +76,7 @@ function updateViewState() {
  */
 async function onGroupAdded(this: M.Chips, element: Element, chip: Element) {
     const group = getChipValue(chip);
-    console.log(group);
+    (group);
     await new UserService().addUserGroup(groupsState.userId!, group);
     groupsState.groups.push(group);
     updateViewState();
@@ -87,7 +87,6 @@ async function onGroupAdded(this: M.Chips, element: Element, chip: Element) {
  */
 async function onGroupDeleted(this: M.Chips, element: Element, chip: Element) {
     const group = getChipValue(chip);
-    console.log(group);
     await new UserService().removeUserGroup(groupsState.userId!, group);
     groupsState.groups = groupsState.groups.filter(g => g !== group);
     updateViewState();

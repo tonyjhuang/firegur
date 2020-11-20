@@ -82,11 +82,6 @@ export class PostService {
 
         if (docs.empty) return Promise.resolve([]);
         const tasks = docs.docs.map((doc: firebase.firestore.QueryDocumentSnapshot) => {
-            console.log(JSON.stringify({
-                id: doc.id,
-                title: doc.data().title,
-                timestamp: doc.data().uploadedAt.toDate()
-            }));
             return docToPost(doc.id, doc.data(), this.userService);
         });
         return Promise.all(tasks);
