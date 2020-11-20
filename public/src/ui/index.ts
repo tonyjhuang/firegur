@@ -18,16 +18,16 @@ $(async function () {
 });
 
 async function render() {
-    showSpinner();
     await initToolbar($('#auth-container')[0]);
     await initGroups($('#groups-container')[0], async () => await renderFeed());
     await renderFeed();
-    hideSpinner();
 }
 
 async function renderFeed() {
+    showSpinner();
     var feedService = new FeedService();
     await feedService.renderFeed($('#feed-container')[0]);
+    hideSpinner();
 }
 
 
